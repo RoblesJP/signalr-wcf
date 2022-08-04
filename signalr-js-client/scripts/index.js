@@ -1,8 +1,25 @@
 const connection = $.hubConnection("http://localhost:8080");
-connection.logging = true;
 const stockTickerHubProxy = connection.createHubProxy("StockTickerHub");
 
-console.log(stockTickerHubProxy);
+function connectionStateChanged(state) {
+  var stateConversion = {
+    0: "connecting",
+    1: "connected",
+    2: "reconnecting",
+    4: "disconnected",
+  };
+  console.log(
+    "SignalR state changed from: " +
+      stateConversion[state.oldState] +
+      " to: " +
+      stateConversion[state.newState]
+  );
+}
+connection.stateChanged(connectionStateChanged);
+
+console.log(connection.state);
+
+setTimeout(() => console.log(connection.state), 2000);
 
 connection
   .start()
